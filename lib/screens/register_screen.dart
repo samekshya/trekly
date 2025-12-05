@@ -221,3 +221,5 @@ class _SocialButton extends StatelessWidget {
     );
   }
 }
+
+// Register screen updated for Sprint 1 submission
