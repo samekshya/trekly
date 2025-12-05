@@ -14,3 +14,6 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+Updated Sprint 1 progress and UI changes.
+Sprint 1: Splash, onboarding, auth and home screens completed.
+Sprint 1: Splash, onboarding, auth and home screens completed.
