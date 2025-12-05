@@ -34,3 +34,8 @@ class _SplashScreenState extends State<SplashScreen> {
     );
   }
 }
+
+// Updated splash screen timing and UI layout
+
+// Splash screen UI updated for Sprint 1 demo
+// Splash screen UI updated for Sprint 1 demo
