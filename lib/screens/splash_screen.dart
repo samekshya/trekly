@@ -18,11 +18,17 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
+      backgroundColor: Colors.white,
       body: Center(
-        child: Text(
-          "Trekly",
-          style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Logo halne
+            Image.asset('assets/images/Trekly_logo_with_text.png', height: 500),
+
+            const SizedBox(height: 16),
+          ],
         ),
       ),
     );
