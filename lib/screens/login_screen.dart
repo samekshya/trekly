@@ -1,7 +1,70 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class LoginScreen extends StatelessWidget {
+import '../features/auth/presentation/providers/auth_providers.dart';
+
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
+
+  @override
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends ConsumerState<LoginScreen> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  bool _isLoading = false;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  bool _isValidEmail(String email) {
+    final emailRegex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
+    return emailRegex.hasMatch(email);
+  }
+
+  void _showSnack(String message) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  Future<void> _handleLogin() async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
+    if (email.isEmpty || !_isValidEmail(email)) {
+      _showSnack('Please enter a valid email');
+      return;
+    }
+    if (password.isEmpty) {
+      _showSnack('Password is required');
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+      ref.read(authRepositoryProvider).login(email, password);
+
+      _showSnack('Login successful');
+
+      if (!mounted) return;
+      Navigator.pushReplacementNamed(context, '/home');
+    } catch (e) {
+      final msg = e.toString().replaceFirst('Exception: ', '');
+      _showSnack(msg.isEmpty ? 'Login failed' : msg);
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,11 +82,9 @@ class LoginScreen extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // logo
                 Image.asset('assets/images/Trekly_logo.png', height: 150),
                 const SizedBox(height: 10),
 
-                // Loginbox
                 Container(
                   width: 320,
                   padding: const EdgeInsets.symmetric(
@@ -41,7 +102,6 @@ class LoginScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
@@ -59,21 +119,26 @@ class LoginScreen extends StatelessWidget {
                         "Login to continue",
                         style: TextStyle(color: Colors.white70, fontSize: 14),
                       ),
-
                       const SizedBox(height: 24),
 
-                      _buildTextField(hint: "Email"),
+                      _buildTextField(
+                        hint: "Email",
+                        controller: _emailController,
+                        keyboardType: TextInputType.emailAddress,
+                      ),
                       const SizedBox(height: 12),
 
-                      _buildTextField(hint: "Password", obscure: true),
+                      _buildTextField(
+                        hint: "Password",
+                        controller: _passwordController,
+                        obscure: true,
+                      ),
                       const SizedBox(height: 20),
 
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.pushNamed(context, '/home');
-                          },
+                          onPressed: _isLoading ? null : _handleLogin,
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
@@ -82,9 +147,9 @@ class LoginScreen extends StatelessWidget {
                             backgroundColor: const Color(0xFF4F8BFF),
                             elevation: 4,
                           ),
-                          child: const Text(
-                            "Login",
-                            style: TextStyle(
+                          child: Text(
+                            _isLoading ? "Logging in..." : "Login",
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
                             ),
@@ -138,8 +203,15 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  static Widget _buildTextField({required String hint, bool obscure = false}) {
+  static Widget _buildTextField({
+    required String hint,
+    required TextEditingController controller,
+    bool obscure = false,
+    TextInputType keyboardType = TextInputType.text,
+  }) {
     return TextField(
+      controller: controller,
+      keyboardType: keyboardType,
       obscureText: obscure,
       style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
