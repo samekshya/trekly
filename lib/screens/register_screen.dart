@@ -1,7 +1,84 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class RegisterScreen extends StatelessWidget {
+import '../features/auth/presentation/providers/auth_providers.dart';
+
+class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
+
+  @override
+  ConsumerState<RegisterScreen> createState() => _RegisterScreenState();
+}
+
+class _RegisterScreenState extends ConsumerState<RegisterScreen> {
+  final TextEditingController _fullNameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  bool _isLoading = false;
+
+  @override
+  void dispose() {
+    _fullNameController.dispose();
+    _emailController.dispose();
+    _phoneController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  bool _isValidEmail(String email) {
+    final emailRegex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
+    return emailRegex.hasMatch(email);
+  }
+
+  void _showSnack(String message) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  Future<void> _handleSignUp() async {
+    final fullName = _fullNameController.text.trim();
+    final email = _emailController.text.trim();
+    final phone = _phoneController.text.trim();
+    final password = _passwordController.text.trim();
+
+    if (fullName.isEmpty) {
+      _showSnack('Full Name is required');
+      return;
+    }
+    if (email.isEmpty || !_isValidEmail(email)) {
+      _showSnack('Please enter a valid email');
+      return;
+    }
+    if (phone.isEmpty) {
+      _showSnack('Phone Number is required');
+      return;
+    }
+    if (password.length < 6) {
+      _showSnack('Password must be at least 6 characters');
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+      ref.read(authRepositoryProvider).signUp(email, password);
+
+      _showSnack('Account created. Please login.');
+
+      if (!mounted) return;
+      Navigator.pushReplacementNamed(context, '/login');
+    } catch (e) {
+      final msg = e.toString().replaceFirst('Exception: ', '');
+      _showSnack(msg.isEmpty ? 'Signup failed' : msg);
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,11 +96,9 @@ class RegisterScreen extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // ✅ logo above the box
                 Image.asset('assets/images/Trekly_logo.png', height: 150),
                 const SizedBox(height: 10),
 
-                // ✅ the glass card container
                 Container(
                   width: 320,
                   padding: const EdgeInsets.symmetric(
@@ -61,24 +136,38 @@ class RegisterScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 24),
 
-                      _buildTextField(hint: 'Full Name'),
+                      _buildTextField(
+                        hint: 'Full Name',
+                        controller: _fullNameController,
+                        keyboardType: TextInputType.name,
+                      ),
                       const SizedBox(height: 12),
 
-                      _buildTextField(hint: 'Email'),
+                      _buildTextField(
+                        hint: 'Email',
+                        controller: _emailController,
+                        keyboardType: TextInputType.emailAddress,
+                      ),
                       const SizedBox(height: 12),
 
-                      _buildTextField(hint: 'Phone Number'),
+                      _buildTextField(
+                        hint: 'Phone Number',
+                        controller: _phoneController,
+                        keyboardType: TextInputType.phone,
+                      ),
                       const SizedBox(height: 12),
 
-                      _buildTextField(hint: 'Password', obscure: true),
+                      _buildTextField(
+                        hint: 'Password',
+                        controller: _passwordController,
+                        obscure: true,
+                      ),
                       const SizedBox(height: 20),
 
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: () {
-                            // TODO: handle signup
-                          },
+                          onPressed: _isLoading ? null : _handleSignUp,
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
@@ -87,9 +176,9 @@ class RegisterScreen extends StatelessWidget {
                             backgroundColor: const Color(0xFF4F8BFF),
                             elevation: 4,
                           ),
-                          child: const Text(
-                            'Sign up',
-                            style: TextStyle(
+                          child: Text(
+                            _isLoading ? 'Signing up...' : 'Sign up',
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
                             ),
@@ -137,7 +226,7 @@ class RegisterScreen extends StatelessWidget {
                           ),
                           GestureDetector(
                             onTap: () {
-                              Navigator.pop(context); // or pushNamed('/login')
+                              Navigator.pushReplacementNamed(context, '/login');
                             },
                             child: const Text(
                               'Login',
@@ -169,15 +258,22 @@ class RegisterScreen extends StatelessWidget {
     );
   }
 
-  static Widget _buildTextField({required String hint, bool obscure = false}) {
+  static Widget _buildTextField({
+    required String hint,
+    required TextEditingController controller,
+    bool obscure = false,
+    TextInputType keyboardType = TextInputType.text,
+  }) {
     return TextField(
+      controller: controller,
+      keyboardType: keyboardType,
       obscureText: obscure,
       style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         hintText: hint,
         hintStyle: const TextStyle(color: Colors.white54),
         filled: true,
-        fillColor: Colors.white.withOpacity(0.08),
+        fillColor: Colors.white24.withOpacity(0.08),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 18,
           vertical: 12,
