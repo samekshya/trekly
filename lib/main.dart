@@ -5,6 +5,8 @@ import 'screens/login_screen.dart';
 import 'screens/register_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/bottom_screen/bottomnavigation_screen.dart';
+import 'app/app.dart';
+import 'core/services/hive_services.dart';
 
 void main() {
   runApp(const MyApp());
