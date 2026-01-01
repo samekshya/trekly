@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'app/app.dart';
 import 'core/services/hive_services.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await HiveService.init();
-  runApp(const App());
+  runApp(const ProviderScope(child: App()));
 }
 
 // import 'package:flutter/material.dart';
