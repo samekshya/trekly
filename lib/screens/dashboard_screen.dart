@@ -197,8 +197,15 @@ class _TipTile extends StatelessWidget {
 }
 
 
-rasjxdnbaksuj'
-sosdkods
-jesidjeo
-]jsodjsojd
-iksiklajik
+
+
+00000000000000000000000000000000000
+0000000000000
+0
+0
+0
+0
+0
+
+0
+0
