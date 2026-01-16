@@ -63,8 +63,8 @@ class AuthViewModel extends rl.StateNotifier<r.AsyncValue<void>> {
     }
   }
 
-  // String? _extractToken(Map<String, dynamic> res) {
-  //   final t = res["token"] ?? res["accessToken"] ?? res["jwt"];
-  //   return t?.toString();
-  // }
+  String? _extractToken(Map<String, dynamic> res) {
+    final t = res["token"] ?? res["accessToken"] ?? res["jwt"];
+    return t?.toString();
+  }
 }
