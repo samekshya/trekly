@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../features/auth/presentation/providers/auth_providers.dart';
+import '../features/auth/presentation/providers/auth_providers_old.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -50,19 +50,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     setState(() => _isLoading = true);
 
     try {
-      ref.read(authRepositoryProvider).login(email, password);
-
-      _showSnack('Login successful');
+      await ref.read(authRepositoryProvider).login(email, password);
 
       if (!mounted) return;
+      _showSnack('Login successful');
       Navigator.pushReplacementNamed(context, '/home');
     } catch (e) {
       final msg = e.toString().replaceFirst('Exception: ', '');
       _showSnack(msg.isEmpty ? 'Login failed' : msg);
     } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -154,6 +151,23 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               fontWeight: FontWeight.w600,
                             ),
                           ),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+
+                      TextButton(
+                        onPressed: () async {
+                          try {
+                            final dio = ref.read(dioProvider);
+                            final res = await dio.get('/test');
+                            _showSnack(res.data.toString());
+                          } catch (e) {
+                            _showSnack(e.toString());
+                          }
+                        },
+                        child: const Text(
+                          'Test API Connection',
+                          style: TextStyle(color: Colors.white),
                         ),
                       ),
 

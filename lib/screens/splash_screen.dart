@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../features/auth/presentation/providers/auth_providers.dart';
+import '../features/auth/presentation/providers/auth_providers_old.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -15,8 +15,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   void initState() {
     super.initState();
 
-    Future.delayed(const Duration(seconds: 2), () {
-      final isLoggedIn = ref.read(authRepositoryProvider).isLoggedIn();
+    Future.delayed(const Duration(seconds: 2), () async {
+      final isLoggedIn = await ref.read(authRepositoryProvider).isLoggedIn();
 
       if (!mounted) return;
 
