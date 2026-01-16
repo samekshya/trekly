@@ -195,3 +195,10 @@ class _TipTile extends StatelessWidget {
     );
   }
 }
+
+
+rasjxdnbaksuj'
+sosdkods
+jesidjeo
+]jsodjsojd
+iksiklajik
