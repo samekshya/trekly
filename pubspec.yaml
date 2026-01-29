@@ -27,6 +27,8 @@ dependencies:
   # Networking 
   dio: ^5.4.1
   shared_preferences: ^2.5.4
+  image_picker: ^1.1.2
+
 
 dev_dependencies:
   flutter_test:

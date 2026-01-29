@@ -6,6 +6,7 @@ import '../screens/onboarding_screen.dart';
 import '../screens/login_screen.dart';
 import '../screens/register_screen.dart';
 import '../screens/bottom_screen/bottomnavigation_screen.dart';
+import 'package:trekly/features/upload/presentation/upload_image_screen.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -21,6 +22,7 @@ class App extends StatelessWidget {
         '/login': (_) => const LoginScreen(),
         '/register': (_) => const RegisterScreen(),
         '/home': (_) => const BottomNavigationScreen(),
+        '/upload': (_) => const UploadImageScreen(),
       },
     );
   }
