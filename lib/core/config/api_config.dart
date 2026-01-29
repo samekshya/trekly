@@ -1,7 +1,6 @@
-class ApiConfig {
-  // Android emulator uses 10.0.2.2 to reach your PC's localhost
-  static const String baseUrl = "http://10.0.2.2:3000/api/v1";
+class ApiEndpoints {
+  static const String baseUrl = "http://10.0.2.2:5050/api/auth";
 
-  static const String signup = "$baseUrl/students";
-  static const String login = "$baseUrl/students/login";
+  static const String login = "/login";
+  static const String signup = "/register";
 }
