@@ -17,3 +17,21 @@ samples, guidance on mobile development, and a full API reference.
 Updated Sprint 1 progress and UI changes.
 Sprint 1: Splash, onboarding, auth and home screens completed.
 Sprint 1: Splash, onboarding, auth and home screens completed.
+
+
+
+### Sprint 5 Verification
+- Unit tests executed successfully using `flutter test test/unit`
+- Widget tests executed successfully using `flutter test test/widget`
+### Sprint 5 Verification
+- Unit tests executed successfully using `flutter test test/unit`
+- Widget tests executed successfully using `flutter test test/widget`
+### Sprint 5 Verification
+- Unit tests executed successfully using `flutter test test/unit`
+- Widget tests executed successfully using `flutter test test/widget`
+### Sprint 5 Verification
+- Unit tests executed successfully using `flutter test test/unit`
+- Widget tests executed successfully using `flutter test test/widget`
+### Sprint 5 Verification
+- Unit tests executed successfully using `flutter test test/unit`
+- Widget tests executed successfully using `flutter test test/widget`
