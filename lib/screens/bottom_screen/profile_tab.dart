@@ -20,7 +20,30 @@ class _ProfileTabState extends State<ProfileTab> {
   bool _isUploading = false;
 
   Future<void> _changePhoto() async {
-    final XFile? picked = await _picker.pickImage(source: ImageSource.gallery);
+    final source = await showModalBottomSheet<ImageSource>(
+      context: context,
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.camera_alt),
+              title: const Text("Take Photo"),
+              onTap: () => Navigator.pop(ctx, ImageSource.camera),
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library),
+              title: const Text("Choose from Gallery"),
+              onTap: () => Navigator.pop(ctx, ImageSource.gallery),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (source == null) return;
+
+    final XFile? picked = await _picker.pickImage(source: source);
     if (picked == null) return;
 
     setState(() {
@@ -29,10 +52,11 @@ class _ProfileTabState extends State<ProfileTab> {
 
     try {
       final url = await _uploadService.uploadImage(File(picked.path));
+      debugPrint("UPLOADED URL: $url");
       setState(() {
         _profileImageUrl = url;
       });
-    } catch (_) {
+    } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(
           context,

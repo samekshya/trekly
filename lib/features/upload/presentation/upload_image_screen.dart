@@ -6,20 +6,42 @@ import 'package:image_picker/image_picker.dart';
 import '../data/image_upload_service.dart';
 
 class UploadImageScreen extends StatefulWidget {
-  const UploadImageScreen({super.key});
+  const UploadImageScreen({
+    super.key,
+    this.picker,
+    this.service,
+    this.initialSelectedImage,
+    this.disableLocalImagePreview = false,
+  });
+  final bool disableLocalImagePreview;
+
+  // For widget tests (dependency injection)
+  final ImagePicker? picker;
+  final ImageUploadService? service;
+
+  // For widget tests (skip real picker)
+  final File? initialSelectedImage;
 
   @override
   State<UploadImageScreen> createState() => _UploadImageScreenState();
 }
 
 class _UploadImageScreenState extends State<UploadImageScreen> {
-  final ImagePicker _picker = ImagePicker();
-  final ImageUploadService _service = ImageUploadService();
+  late final ImagePicker _picker;
+  late final ImageUploadService _service;
 
   File? _selectedImage;
   String? _uploadedImageUrl;
   bool _isUploading = false;
   String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _picker = widget.picker ?? ImagePicker();
+    _service = widget.service ?? ImageUploadService();
+    _selectedImage = widget.initialSelectedImage;
+  }
 
   Future<void> _pickImage() async {
     setState(() {
@@ -75,6 +97,7 @@ class _UploadImageScreenState extends State<UploadImageScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             ElevatedButton(
+              key: const Key('pickImageBtn'),
               onPressed: _isUploading ? null : _pickImage,
               child: const Text("Pick Image"),
             ),
@@ -83,17 +106,23 @@ class _UploadImageScreenState extends State<UploadImageScreen> {
             if (_selectedImage != null) ...[
               const Text("Selected Image (local):"),
               const SizedBox(height: 8),
-              SizedBox(
-                height: 180,
-                child: Image.file(_selectedImage!, fit: BoxFit.cover),
-              ),
+              if (!widget.disableLocalImagePreview)
+                SizedBox(
+                  height: 180,
+                  child: Image.file(_selectedImage!, fit: BoxFit.cover),
+                )
+              else
+                const SizedBox(height: 180),
+
               const SizedBox(height: 12),
             ],
 
             ElevatedButton(
+              key: const Key('uploadBtn'),
               onPressed: _isUploading ? null : _uploadImage,
               child: _isUploading
                   ? const SizedBox(
+                      key: Key('uploadLoading'),
                       height: 18,
                       width: 18,
                       child: CircularProgressIndicator(strokeWidth: 2),
@@ -104,7 +133,11 @@ class _UploadImageScreenState extends State<UploadImageScreen> {
             const SizedBox(height: 12),
 
             if (_error != null) ...[
-              Text(_error!, style: const TextStyle(color: Colors.red)),
+              Text(
+                _error!,
+                key: const Key('errorText'),
+                style: const TextStyle(color: Colors.red),
+              ),
               const SizedBox(height: 12),
             ],
 
@@ -114,6 +147,7 @@ class _UploadImageScreenState extends State<UploadImageScreen> {
               Expanded(
                 child: Image.network(
                   _uploadedImageUrl!,
+                  key: const Key('serverImage'),
                   fit: BoxFit.contain,
                   errorBuilder: (_, __, ___) =>
                       const Text("Failed to load server image"),
