@@ -20,18 +20,3 @@ Sprint 1: Splash, onboarding, auth and home screens completed.
 
 
 
-### Sprint 5 Verification
-- Unit tests executed successfully using `flutter test test/unit`
-- Widget tests executed successfully using `flutter test test/widget`
-### Sprint 5 Verification
-- Unit tests executed successfully using `flutter test test/unit`
-- Widget tests executed successfully using `flutter test test/widget`
-### Sprint 5 Verification
-- Unit tests executed successfully using `flutter test test/unit`
-- Widget tests executed successfully using `flutter test test/widget`
-### Sprint 5 Verification
-- Unit tests executed successfully using `flutter test test/unit`
-- Widget tests executed successfully using `flutter test test/widget`
-### Sprint 5 Verification
-- Unit tests executed successfully using `flutter test test/unit`
-- Widget tests executed successfully using `flutter test test/widget`

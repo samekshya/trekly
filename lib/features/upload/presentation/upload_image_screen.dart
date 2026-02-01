@@ -160,21 +160,3 @@ class _UploadImageScreenState extends State<UploadImageScreen> {
     );
   }
 }
-
-
-// Handles picking image from gallery
-Future<void> _pickImage() async {
-
-// Uploads selected image to backend server
-Future<void> _uploadImage() async {
-// Handles picking image from gallery
-Future<void> _pickImage() async {
-
-// Uploads selected image to backend server
-Future<void> _uploadImage() async {
-// Handles picking image from gallery
-Future<void> _pickImage() async {
-
-// Uploads selected image to backend server
-Future<void> _uploadImage() async {
-
