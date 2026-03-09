@@ -16,14 +16,14 @@ class LoginUseCase {
     // API call garxa login ko lagi
     final response = await datasource.login(email, password);
 
-    // token nikalna
-    final token = response['token'] as String;
+    // data object nikalna
+    final data = response['data'] as Map<String, dynamic>;
 
-    // token save garxa device ma
-    await tokenStorage.saveToken(token);
+// token nikalna
+    final token = data['token'] as String;
 
-    // user data nikalna ra save garxa
-    final userJson = response['user'] as Map<String, dynamic>;
+// user data nikalna ra save garxa
+    final userJson = data['user'] as Map<String, dynamic>;
     final user = UserModel.fromJson(userJson);
     await tokenStorage.saveUser(user.toJson());
 
