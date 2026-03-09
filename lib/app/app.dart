@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-// screens
 import '../screens/splash_screen.dart';
 import '../screens/onboarding_screen.dart';
 import '../screens/login_screen.dart';
 import '../screens/register_screen.dart';
 import '../screens/bottom_screen/bottomnavigation_screen.dart';
 import 'package:trekly/features/upload/presentation/upload_image_screen.dart';
+import '../screens/forgot_password_screen.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -23,11 +23,7 @@ class App extends StatelessWidget {
         '/register': (_) => const RegisterScreen(),
         '/home': (_) => const BottomNavigationScreen(),
         '/upload': (_) => const UploadImageScreen(),
-        '/settings': (_) => const SettingsScreen(),
-        '/my-bookings': (_) => const MyBookingsScreen(),
-        '/change-password': (_) => const ChangePasswordScreen(),
         '/forgot-password': (_) => const ForgotPasswordScreen(),
-        '/weather': (_) => const WeatherScreen(),
       },
     );
   }
