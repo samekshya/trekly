@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../features/auth/presentation/providers/auth_providers_old.dart';
+import '../../features/auth/presentation/viewmodels/auth_viewmodel.dart';
 import 'dashboard_tab.dart';
 import 'explore_tab.dart';
 import 'saved_tab.dart';
@@ -35,7 +35,7 @@ class _BottomNavigationScreenState
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () {
-              ref.read(authRepositoryProvider).logout();
+              ref.read(authViewModelProvider.notifier).logout();
               Navigator.pushReplacementNamed(context, '/login');
             },
           ),
