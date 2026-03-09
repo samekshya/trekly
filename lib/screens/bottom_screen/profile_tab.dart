@@ -1,18 +1,18 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
-
 import '../../features/upload/data/image_upload_service.dart';
+import '../../features/auth/presentation/viewmodels/auth_viewmodel.dart';
 
-class ProfileTab extends StatefulWidget {
+class ProfileTab extends ConsumerStatefulWidget {
   const ProfileTab({super.key});
 
   @override
-  State<ProfileTab> createState() => _ProfileTabState();
+  ConsumerState<ProfileTab> createState() => _ProfileTabState();
 }
 
-class _ProfileTabState extends State<ProfileTab> {
+class _ProfileTabState extends ConsumerState<ProfileTab> {
   final ImagePicker _picker = ImagePicker();
   final ImageUploadService _uploadService = ImageUploadService();
 
@@ -46,33 +46,26 @@ class _ProfileTabState extends State<ProfileTab> {
     final XFile? picked = await _picker.pickImage(source: source);
     if (picked == null) return;
 
-    setState(() {
-      _isUploading = true;
-    });
+    setState(() => _isUploading = true);
 
     try {
       final url = await _uploadService.uploadImage(File(picked.path));
-      debugPrint("UPLOADED URL: $url");
-      setState(() {
-        _profileImageUrl = url;
-      });
+      setState(() => _profileImageUrl = url);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text("Upload failed")));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text("Upload failed")));
       }
     } finally {
-      if (mounted) {
-        setState(() {
-          _isUploading = false;
-        });
-      }
+      if (mounted) setState(() => _isUploading = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    // real user data from viewmodel
+    final user = ref.watch(authViewModelProvider).user;
+
     return Scaffold(
       appBar: AppBar(title: const Text("Profile")),
       body: Padding(
@@ -107,10 +100,15 @@ class _ProfileTabState extends State<ProfileTab> {
               ],
             ),
             const SizedBox(height: 12),
-            Text("Trekly User", style: Theme.of(context).textTheme.titleLarge),
-            const SizedBox(height: 4),
+            // real user name
             Text(
-              "user@trekly.com",
+              user?.name ?? 'Trekly User',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(height: 4),
+            // real user email
+            Text(
+              user?.email ?? 'user@trekly.com',
               style: Theme.of(context).textTheme.bodyMedium,
             ),
             const SizedBox(height: 20),
@@ -120,19 +118,28 @@ class _ProfileTabState extends State<ProfileTab> {
                   ListTile(
                     leading: const Icon(Icons.settings_outlined),
                     title: const Text("Settings"),
-                    onTap: () {},
+                    onTap: () => Navigator.pushNamed(context, '/settings'),
                   ),
                   const Divider(height: 1),
                   ListTile(
-                    leading: const Icon(Icons.help_outline),
-                    title: const Text("Help & Support"),
-                    onTap: () {},
+                    leading: const Icon(Icons.bookmark_outline),
+                    title: const Text("My Bookings"),
+                    onTap: () => Navigator.pushNamed(context, '/my-bookings'),
+                  ),
+                  const Divider(height: 1),
+                  ListTile(
+                    leading: const Icon(Icons.lock_outline),
+                    title: const Text("Change Password"),
+                    onTap: () =>
+                        Navigator.pushNamed(context, '/change-password'),
                   ),
                   const Divider(height: 1),
                   ListTile(
                     leading: const Icon(Icons.logout),
                     title: const Text("Logout"),
                     onTap: () {
+                      // logout garxa ra login page ma pathauxa
+                      ref.read(authViewModelProvider.notifier).logout();
                       Navigator.pushReplacementNamed(context, '/login');
                     },
                   ),
@@ -145,57 +152,3 @@ class _ProfileTabState extends State<ProfileTab> {
     );
   }
 }
-
-// import 'package:flutter/material.dart';
-
-// class ProfileTab extends StatelessWidget {
-//   const ProfileTab({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(title: const Text("Profile")),
-//       body: Padding(
-//         padding: const EdgeInsets.all(16),
-//         child: Column(
-//           children: [
-//             const CircleAvatar(radius: 38, child: Icon(Icons.person, size: 38)),
-//             const SizedBox(height: 12),
-//             Text("Trekly User", style: Theme.of(context).textTheme.titleLarge),
-//             const SizedBox(height: 4),
-//             Text(
-//               "user@trekly.com",
-//               style: Theme.of(context).textTheme.bodyMedium,
-//             ),
-//             const SizedBox(height: 20),
-//             Card(
-//               child: Column(
-//                 children: [
-//                   ListTile(
-//                     leading: const Icon(Icons.settings_outlined),
-//                     title: const Text("Settings"),
-//                     onTap: () {},
-//                   ),
-//                   const Divider(height: 1),
-//                   ListTile(
-//                     leading: const Icon(Icons.help_outline),
-//                     title: const Text("Help & Support"),
-//                     onTap: () {},
-//                   ),
-//                   const Divider(height: 1),
-//                   ListTile(
-//                     leading: const Icon(Icons.logout),
-//                     title: const Text("Logout"),
-//                     onTap: () {
-//                       Navigator.pushReplacementNamed(context, '/login');
-//                     },
-//                   ),
-//                 ],
-//               ),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }

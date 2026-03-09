@@ -23,6 +23,11 @@ class App extends StatelessWidget {
         '/register': (_) => const RegisterScreen(),
         '/home': (_) => const BottomNavigationScreen(),
         '/upload': (_) => const UploadImageScreen(),
+        '/settings': (_) => const SettingsScreen(),
+        '/my-bookings': (_) => const MyBookingsScreen(),
+        '/change-password': (_) => const ChangePasswordScreen(),
+        '/forgot-password': (_) => const ForgotPasswordScreen(),
+        '/weather': (_) => const WeatherScreen(),
       },
     );
   }
