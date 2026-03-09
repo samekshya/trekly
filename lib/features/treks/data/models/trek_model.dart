@@ -33,7 +33,7 @@ class TrekModel {
     );
   }
 
-  // difficulty hेरेर color dिनxa
+  // difficulty herera tei anusar color dincha
   String get difficultyLabel {
     switch (difficulty.toLowerCase()) {
       case 'easy':

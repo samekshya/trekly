@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-
 import '../screens/splash_screen.dart';
 import '../screens/onboarding_screen.dart';
 import '../screens/login_screen.dart';
 import '../screens/register_screen.dart';
+import '../screens/forgot_password_screen.dart';
+import '../screens/trek_detail_screen.dart';
 import '../screens/bottom_screen/bottomnavigation_screen.dart';
 import 'package:trekly/features/upload/presentation/upload_image_screen.dart';
-import '../screens/forgot_password_screen.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -24,6 +24,16 @@ class App extends StatelessWidget {
         '/home': (_) => const BottomNavigationScreen(),
         '/upload': (_) => const UploadImageScreen(),
         '/forgot-password': (_) => const ForgotPasswordScreen(),
+      },
+      // routes with arguments use onGenerateRoute
+      onGenerateRoute: (settings) {
+        if (settings.name == '/trek-detail') {
+          return MaterialPageRoute(
+            builder: (_) => const TrekDetailScreen(),
+            settings: settings,
+          );
+        }
+        return null;
       },
     );
   }
