@@ -1,66 +1,157 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../features/treks/presentation/viewmodels/trek_viewmodel.dart';
 
-class ExploreTab extends StatelessWidget {
+class ExploreTab extends ConsumerStatefulWidget {
   const ExploreTab({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Explore")),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "Discover Treks",
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const SizedBox(height: 12),
-            const _ExploreCard(
-              title: "Easy Treks",
-              subtitle: "Short routes for beginners",
-              icon: Icons.directions_walk,
-            ),
-            const SizedBox(height: 12),
-            const _ExploreCard(
-              title: "Popular Routes",
-              subtitle: "Most visited trails in Nepal",
-              icon: Icons.local_fire_department_outlined,
-            ),
-            const SizedBox(height: 12),
-            const _ExploreCard(
-              title: "High Altitude",
-              subtitle: "For experienced trekkers",
-              icon: Icons.terrain,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  ConsumerState<ExploreTab> createState() => _ExploreTabState();
 }
 
-class _ExploreCard extends StatelessWidget {
-  final String title;
-  final String subtitle;
-  final IconData icon;
+class _ExploreTabState extends ConsumerState<ExploreTab> {
+  final _searchController = TextEditingController();
+  String _selectedDifficulty = '';
 
-  const _ExploreCard({
-    required this.title,
-    required this.subtitle,
-    required this.icon,
-  });
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: ListTile(
-        leading: CircleAvatar(child: Icon(icon, size: 18)),
-        title: Text(title),
-        subtitle: Text(subtitle),
-        trailing: const Icon(Icons.chevron_right),
-        onTap: () {},
+    final trekState = ref.watch(trekViewModelProvider);
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('Explore')),
+      body: Column(
+        children: [
+          // search bar
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: 'Search treks...',
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+              ),
+              onChanged: (value) {
+                ref.read(trekViewModelProvider.notifier).loadTreks(
+                      search: value,
+                      difficulty: _selectedDifficulty,
+                    );
+              },
+            ),
+          ),
+
+          // difficulty filter chips
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Row(
+              children: ['All', 'Easy', 'Moderate', 'Hard'].map((d) {
+                final isSelected = _selectedDifficulty == (d == 'All' ? '' : d);
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: FilterChip(
+                    label: Text(d),
+                    selected: isSelected,
+                    onSelected: (_) {
+                      setState(() {
+                        _selectedDifficulty = d == 'All' ? '' : d;
+                      });
+                      ref.read(trekViewModelProvider.notifier).loadTreks(
+                            search: _searchController.text,
+                            difficulty: _selectedDifficulty,
+                          );
+                    },
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+
+          const SizedBox(height: 8),
+
+          // trek list
+          Expanded(
+            child: trekState.isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : trekState.error != null
+                    ? Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.error_outline,
+                                size: 48, color: Colors.red),
+                            const SizedBox(height: 8),
+                            Text('Error: ${trekState.error}'),
+                            const SizedBox(height: 8),
+                            ElevatedButton(
+                              onPressed: () => ref
+                                  .read(trekViewModelProvider.notifier)
+                                  .loadTreks(),
+                              child: const Text('Retry'),
+                            ),
+                          ],
+                        ),
+                      )
+                    : trekState.treks.isEmpty
+                        ? const Center(child: Text('No treks found'))
+                        : ListView.builder(
+                            padding: const EdgeInsets.all(12),
+                            itemCount: trekState.treks.length,
+                            itemBuilder: (context, index) {
+                              final trek = trekState.treks[index];
+                              return Card(
+                                margin: const EdgeInsets.only(bottom: 12),
+                                child: ListTile(
+                                  leading: CircleAvatar(
+                                    child: Text(
+                                      trek.name[0],
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                  title: Text(trek.name),
+                                  subtitle: Text(trek.location),
+                                  trailing: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        trek.difficulty,
+                                        style: TextStyle(
+                                          color: trek.difficulty == 'Easy'
+                                              ? Colors.green
+                                              : trek.difficulty == 'Moderate'
+                                                  ? Colors.orange
+                                                  : Colors.red,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                      Text('${trek.duration} days',
+                                          style: const TextStyle(fontSize: 11)),
+                                    ],
+                                  ),
+                                  onTap: () {
+                                    Navigator.pushNamed(
+                                      context,
+                                      '/trek-detail',
+                                      arguments: trek.id,
+                                    );
+                                  },
+                                ),
+                              );
+                            },
+                          ),
+          ),
+        ],
       ),
     );
   }
