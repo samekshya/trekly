@@ -32,4 +32,28 @@ class AuthRemoteDataSource {
     }
     return {"data": res.data};
   }
+
+  // calls POST /api/auth/forgot-password
+  Future<void> forgotPassword(String email) async {
+    await _dio.post(
+      ApiEndpoints.forgotPassword,
+      data: {'email': email.trim()},
+    );
+  }
+
+  Future<Map<String, dynamic>> getMe() async {
+    final res = await _dio.get(ApiEndpoints.me);
+    return res.data as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> updateProfile(
+    String id,
+    Map<String, dynamic> data,
+  ) async {
+    final res = await _dio.put(
+      ApiEndpoints.updateProfile(id),
+      data: data,
+    );
+    return res.data as Map<String, dynamic>;
+  }
 }
