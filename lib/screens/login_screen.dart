@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../features/auth/presentation/providers/auth_providers_old.dart';
+import '../features/auth/presentation/viewmodels/auth_viewmodel.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -50,11 +50,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     setState(() => _isLoading = true);
 
     try {
-      await ref.read(authRepositoryProvider).login(email, password);
+      final success =
+          await ref.read(authViewModelProvider.notifier).login(email, password);
 
       if (!mounted) return;
-      _showSnack('Login successful');
-      Navigator.pushReplacementNamed(context, '/home');
+      if (success) {
+        Navigator.pushReplacementNamed(context, '/home');
+      } else {
+        final error = ref.read(authViewModelProvider).error;
+        _showSnack(error ?? 'Login failed');
+      }
     } catch (e) {
       final msg = e.toString().replaceFirst('Exception: ', '');
       _showSnack(msg.isEmpty ? 'Login failed' : msg);
@@ -81,7 +86,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               children: [
                 Image.asset('assets/images/Trekly_logo.png', height: 150),
                 const SizedBox(height: 10),
-
                 Container(
                   width: 320,
                   padding: const EdgeInsets.symmetric(
@@ -117,21 +121,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         style: TextStyle(color: Colors.white70, fontSize: 14),
                       ),
                       const SizedBox(height: 24),
-
                       _buildTextField(
                         hint: "Email",
                         controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
                       ),
                       const SizedBox(height: 12),
-
                       _buildTextField(
                         hint: "Password",
                         controller: _passwordController,
                         obscure: true,
                       ),
                       const SizedBox(height: 20),
-
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
@@ -154,25 +155,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         ),
                       ),
                       const SizedBox(height: 10),
-
                       TextButton(
-                        onPressed: () async {
-                          try {
-                            final dio = ref.read(dioProvider);
-                            final res = await dio.get('/test');
-                            _showSnack(res.data.toString());
-                          } catch (e) {
-                            _showSnack(e.toString());
-                          }
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/forgot-password');
                         },
                         child: const Text(
-                          'Test API Connection',
-                          style: TextStyle(color: Colors.white),
+                          'Forgot Password?',
+                          style: TextStyle(color: Colors.white70),
                         ),
                       ),
-
                       const SizedBox(height: 16),
-
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -198,9 +190,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           ),
                         ],
                       ),
-
                       const SizedBox(height: 12),
-
                       const Text(
                         "By logging in, you agree to the Terms & Privacy Policy",
                         textAlign: TextAlign.center,
