@@ -281,6 +281,15 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
                         ),
                         _Divider(),
                         _MenuTile(
+                          icon: Icons.safety_check,
+                          label: 'Trekking Essentials',
+                          color: Colors.blue,
+                          bgColor: Colors.blue.shade50,
+                          onTap: () =>
+                              Navigator.pushNamed(context, '/essentials'),
+                        ),
+                        _Divider(),
+                        _MenuTile(
                           icon: Icons.lock_outline,
                           label: 'Change Password',
                           color: Colors.orange,

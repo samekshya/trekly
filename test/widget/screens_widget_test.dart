@@ -63,112 +63,97 @@ void main() {
 
   group('Settings Screen Widget Tests', () {
     testWidgets('WT06 - Settings screen renders', (tester) async {
-      await tester
-          .pumpWidget(testWidget(const SettingsScreen(), withProvider: false));
+      await tester.pumpWidget(testWidget(const SettingsScreen()));
       await tester.pump();
       expect(find.byType(Scaffold), findsOneWidget);
     });
 
-    testWidgets('WT07 - Settings screen has dark mode toggle', (tester) async {
-      await tester
-          .pumpWidget(testWidget(const SettingsScreen(), withProvider: false));
+    testWidgets('WT07 - Settings screen has app bar', (tester) async {
+      await tester.pumpWidget(testWidget(const SettingsScreen()));
+      await tester.pump();
+      expect(find.byType(AppBar), findsOneWidget);
+    });
+
+    testWidgets('WT08 - Settings screen has title', (tester) async {
+      await tester.pumpWidget(testWidget(const SettingsScreen()));
+      await tester.pump();
+      expect(find.text('Settings'), findsOneWidget);
+    });
+
+    testWidgets('WT09 - Settings screen has list view', (tester) async {
+      await tester.pumpWidget(testWidget(const SettingsScreen()));
+      await tester.pump();
+      expect(find.byType(ListView), findsOneWidget);
+    });
+
+    testWidgets('WT10 - Settings screen has dark mode text', (tester) async {
+      await tester.pumpWidget(testWidget(const SettingsScreen()));
       await tester.pump();
       expect(find.text('Dark Mode'), findsOneWidget);
     });
 
-    testWidgets('WT08 - Settings has switch tiles', (tester) async {
-      await tester
-          .pumpWidget(testWidget(const SettingsScreen(), withProvider: false));
+    testWidgets('WT11 - Settings screen has a switch', (tester) async {
+      await tester.pumpWidget(testWidget(const SettingsScreen()));
       await tester.pump();
-      expect(find.byType(SwitchListTile), findsWidgets);
+      expect(find.byType(Switch), findsOneWidget);
     });
 
-    testWidgets('WT09 - Settings dark mode toggle works', (tester) async {
-      await tester
-          .pumpWidget(testWidget(const SettingsScreen(), withProvider: false));
-      await tester.pump();
-      await tester.tap(find.byType(Switch).first);
-      await tester.pump();
-      expect(find.byType(Switch), findsWidgets);
-    });
-
-    testWidgets('WT10 - Settings screen shows app version', (tester) async {
-      await tester
-          .pumpWidget(testWidget(const SettingsScreen(), withProvider: false));
+    testWidgets('WT12 - Settings screen shows version number', (tester) async {
+      await tester.pumpWidget(testWidget(const SettingsScreen()));
       await tester.pump();
       expect(find.text('1.0.0'), findsOneWidget);
     });
 
-    testWidgets('WT11 - Settings has notifications toggle', (tester) async {
-      await tester
-          .pumpWidget(testWidget(const SettingsScreen(), withProvider: false));
-      await tester.pump();
-      expect(find.text('Push Notifications'), findsOneWidget);
-    });
-
-    testWidgets('WT12 - Settings has privacy policy', (tester) async {
-      await tester
-          .pumpWidget(testWidget(const SettingsScreen(), withProvider: false));
+    testWidgets('WT13 - Settings screen has privacy policy', (tester) async {
+      await tester.pumpWidget(testWidget(const SettingsScreen()));
       await tester.pump();
       expect(find.text('Privacy Policy'), findsOneWidget);
     });
 
-    testWidgets('WT13 - Settings has terms of service', (tester) async {
-      await tester
-          .pumpWidget(testWidget(const SettingsScreen(), withProvider: false));
+    testWidgets('WT14 - Settings screen has terms of service', (tester) async {
+      await tester.pumpWidget(testWidget(const SettingsScreen()));
       await tester.pump();
       expect(find.text('Terms of Service'), findsOneWidget);
     });
 
-    testWidgets('WT14 - Settings has app version label', (tester) async {
-      await tester
-          .pumpWidget(testWidget(const SettingsScreen(), withProvider: false));
+    testWidgets('WT15 - Settings screen has app version label', (tester) async {
+      await tester.pumpWidget(testWidget(const SettingsScreen()));
       await tester.pump();
       expect(find.text('App Version'), findsOneWidget);
     });
 
-    testWidgets('WT15 - Settings notifications toggle works', (tester) async {
-      await tester
-          .pumpWidget(testWidget(const SettingsScreen(), withProvider: false));
-      await tester.pump();
-      await tester.tap(find.byType(Switch).last);
-      await tester.pump();
-      expect(find.byType(SwitchListTile), findsWidgets);
-    });
-
     testWidgets('WT16 - Settings has appearance section', (tester) async {
-      await tester
-          .pumpWidget(testWidget(const SettingsScreen(), withProvider: false));
+      await tester.pumpWidget(testWidget(const SettingsScreen()));
       await tester.pump();
-      expect(find.text('Appearance'), findsOneWidget);
+      expect(find.text('APPEARANCE'), findsOneWidget);
     });
 
-    testWidgets('WT17 - Settings has notifications section', (tester) async {
-      await tester
-          .pumpWidget(testWidget(const SettingsScreen(), withProvider: false));
+    testWidgets('WT17 - Settings has about section', (tester) async {
+      await tester.pumpWidget(testWidget(const SettingsScreen()));
       await tester.pump();
-      expect(find.text('Notifications'), findsOneWidget);
+      expect(find.text('ABOUT'), findsOneWidget);
     });
 
-    testWidgets('WT18 - Settings has about section header', (tester) async {
-      await tester
-          .pumpWidget(testWidget(const SettingsScreen(), withProvider: false));
+    testWidgets('WT18 - Settings has info icons', (tester) async {
+      await tester.pumpWidget(testWidget(const SettingsScreen()));
       await tester.pump();
-      expect(find.text('About'), findsOneWidget);
+      expect(find.byIcon(Icons.info_outline), findsOneWidget);
+      expect(find.byIcon(Icons.privacy_tip_outlined), findsOneWidget);
+      expect(find.byIcon(Icons.description_outlined), findsOneWidget);
     });
 
-    testWidgets('WT19 - Settings has list tiles', (tester) async {
-      await tester
-          .pumpWidget(testWidget(const SettingsScreen(), withProvider: false));
+    testWidgets('WT19 - Settings has two tappable info items', (tester) async {
+      await tester.pumpWidget(testWidget(const SettingsScreen()));
       await tester.pump();
-      expect(find.byType(ListTile), findsWidgets);
+      expect(find.byType(InkWell), findsNWidgets(2));
     });
 
-    testWidgets('WT20 - Settings screen builds without error', (tester) async {
-      await tester
-          .pumpWidget(testWidget(const SettingsScreen(), withProvider: false));
+    testWidgets('WT20 - Settings switch can be tapped', (tester) async {
+      await tester.pumpWidget(testWidget(const SettingsScreen()));
       await tester.pump();
-      expect(tester.takeException(), isNull);
+      await tester.tap(find.byType(Switch));
+      await tester.pump();
+      expect(find.byType(Switch), findsOneWidget);
     });
   });
 }

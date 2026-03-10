@@ -24,6 +24,8 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
   Future<void> _loadBookings() async {
     try {
       final token = await TokenStorage().getToken();
+      print('TOKEN: $token');
+      print('ENDPOINT: ${ApiEndpoints.baseUrl}${ApiEndpoints.myBookings}');
       if (token == null) {
         setState(() {
           _error = 'Not logged in';
@@ -33,6 +35,8 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
       }
       final dio = ApiClient.createAuthDio(token);
       final res = await dio.get(ApiEndpoints.myBookings);
+      print('RESPONSE: ${res.data}');
+      print('BOOKINGS COUNT: ${(res.data['data'] ?? []).length}');
       setState(() {
         _bookings = res.data['data'] ?? [];
         _isLoading = false;

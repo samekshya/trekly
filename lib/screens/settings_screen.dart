@@ -1,136 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../core/providers/theme_provider.dart';
 
-class SettingsScreen extends StatefulWidget {
+class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
 
   @override
-  State<SettingsScreen> createState() => _SettingsScreenState();
+  ConsumerState<SettingsScreen> createState() => _SettingsScreenState();
 }
 
-class _SettingsScreenState extends State<SettingsScreen> {
-  bool _isDarkMode = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return Theme(
-      data: _isDarkMode
-          ? ThemeData.dark().copyWith(
-              colorScheme: const ColorScheme.dark(primary: Color(0xFF00897B)),
-              switchTheme: SwitchThemeData(
-                thumbColor: WidgetStateProperty.resolveWith((states) =>
-                    states.contains(WidgetState.selected)
-                        ? const Color(0xFF00897B)
-                        : null),
-                trackColor: WidgetStateProperty.resolveWith((states) =>
-                    states.contains(WidgetState.selected)
-                        ? const Color(0xFF00897B).withOpacity(0.5)
-                        : null),
-              ),
-            )
-          : ThemeData.light().copyWith(
-              colorScheme: const ColorScheme.light(primary: Color(0xFF00695C)),
-            ),
-      child: Scaffold(
-        backgroundColor:
-            _isDarkMode ? const Color(0xFF121212) : const Color(0xFFF5F7F5),
-        appBar: AppBar(
-          title: const Text('Settings'),
-          backgroundColor: const Color(0xFF00695C),
-          foregroundColor: Colors.white,
-          elevation: 0,
-        ),
-        body: ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            const SizedBox(height: 8),
-
-            // Appearance section
-            _sectionLabel('Appearance', _isDarkMode),
-            const SizedBox(height: 8),
-            _SettingsCard(
-              isDark: _isDarkMode,
-              children: [
-                _ToggleTile(
-                  icon: _isDarkMode ? Icons.dark_mode : Icons.light_mode,
-                  iconColor: _isDarkMode ? Colors.indigo : Colors.orange,
-                  iconBg: _isDarkMode
-                      ? Colors.indigo.shade900
-                      : Colors.orange.shade50,
-                  title: 'Dark Mode',
-                  subtitle:
-                      _isDarkMode ? 'Dark theme is on' : 'Light theme is on',
-                  value: _isDarkMode,
-                  isDark: _isDarkMode,
-                  onChanged: (val) => setState(() => _isDarkMode = val),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 20),
-
-            // About section
-            _sectionLabel('About', _isDarkMode),
-            const SizedBox(height: 8),
-            _SettingsCard(
-              isDark: _isDarkMode,
-              children: [
-                _InfoTile(
-                  icon: Icons.info_outline,
-                  iconColor: const Color(0xFF00695C),
-                  iconBg: const Color(0xFF00695C).withOpacity(0.1),
-                  title: 'App Version',
-                  trailing: Text(
-                    '1.0.0',
-                    style: TextStyle(
-                      color: _isDarkMode ? Colors.grey.shade400 : Colors.grey,
-                      fontSize: 14,
-                    ),
-                  ),
-                  isDark: _isDarkMode,
-                ),
-                _divider(_isDarkMode),
-                _InfoTile(
-                  icon: Icons.privacy_tip_outlined,
-                  iconColor: Colors.blue,
-                  iconBg: Colors.blue.shade50,
-                  title: 'Privacy Policy',
-                  trailing: Icon(Icons.chevron_right,
-                      color: _isDarkMode
-                          ? Colors.grey.shade500
-                          : Colors.grey.shade400),
-                  isDark: _isDarkMode,
-                  onTap: () {},
-                ),
-                _divider(_isDarkMode),
-                _InfoTile(
-                  icon: Icons.description_outlined,
-                  iconColor: Colors.purple,
-                  iconBg: Colors.purple.shade50,
-                  title: 'Terms of Service',
-                  trailing: Icon(Icons.chevron_right,
-                      color: _isDarkMode
-                          ? Colors.grey.shade500
-                          : Colors.grey.shade400),
-                  isDark: _isDarkMode,
-                  onTap: () {},
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 30),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _sectionLabel(String title, bool isDark) {
+class _SettingsScreenState extends ConsumerState<SettingsScreen> {
+  Widget _sectionLabel(String title, bool isDarkMode) {
     return Padding(
-      padding: const EdgeInsets.only(left: 4, bottom: 2),
+      padding: const EdgeInsets.only(left: 4, bottom: 8),
       child: Text(
         title.toUpperCase(),
         style: TextStyle(
-          color: isDark ? const Color(0xFF00897B) : const Color(0xFF00695C),
+          color: isDarkMode ? const Color(0xFF00897B) : const Color(0xFF00695C),
           fontWeight: FontWeight.bold,
           fontSize: 12,
           letterSpacing: 0.8,
@@ -139,160 +25,245 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _divider(bool isDark) {
+  Widget _divider(bool isDarkMode) {
     return Divider(
       height: 1,
       thickness: 1,
       indent: 56,
-      color: isDark ? Colors.white10 : Colors.grey.shade100,
+      color: isDarkMode ? Colors.white10 : Colors.grey.shade100,
     );
   }
-}
-
-class _SettingsCard extends StatelessWidget {
-  final List<Widget> children;
-  final bool isDark;
-  const _SettingsCard({required this.children, required this.isDark});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.3 : 0.06),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
+    final themeMode = ref.watch(themeModeProvider);
+    final isDarkMode = themeMode == ThemeMode.dark;
+
+    final cardColor = isDarkMode ? const Color(0xFF1E1E1E) : Colors.white;
+    final bgColor =
+        isDarkMode ? const Color(0xFF121212) : const Color(0xFFF5F7F5);
+    final textColor = isDarkMode ? Colors.white : Colors.black87;
+    final subtitleColor = isDarkMode ? Colors.grey.shade400 : Colors.grey;
+
+    return Scaffold(
+      backgroundColor: bgColor,
+      appBar: AppBar(
+        title: const Text('Settings'),
+        backgroundColor: const Color(0xFF00695C),
+        foregroundColor: Colors.white,
+        elevation: 0,
       ),
-      child: Column(children: children),
-    );
-  }
-}
-
-class _ToggleTile extends StatelessWidget {
-  final IconData icon;
-  final Color iconColor;
-  final Color iconBg;
-  final String title;
-  final String subtitle;
-  final bool value;
-  final bool isDark;
-  final ValueChanged<bool> onChanged;
-
-  const _ToggleTile({
-    required this.icon,
-    required this.iconColor,
-    required this.iconBg,
-    required this.title,
-    required this.subtitle,
-    required this.value,
-    required this.isDark,
-    required this.onChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      child: Row(
+      body: ListView(
+        padding: const EdgeInsets.all(16),
         children: [
+          const SizedBox(height: 8),
+
+          // Appearance section
+          _sectionLabel('Appearance', isDarkMode),
           Container(
-            padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: iconBg,
-              borderRadius: BorderRadius.circular(10),
+              color: cardColor,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(isDarkMode ? 0.3 : 0.06),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
-            child: Icon(icon, color: iconColor, size: 18),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: isDarkMode
+                          ? Colors.indigo.shade900
+                          : Colors.orange.shade50,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(
+                      isDarkMode ? Icons.dark_mode : Icons.light_mode,
+                      color:
+                          isDarkMode ? Colors.indigo.shade200 : Colors.orange,
+                      size: 18,
+                    ),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Dark Mode',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                            color: textColor,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          isDarkMode ? 'Dark theme is on' : 'Light theme is on',
+                          style: TextStyle(fontSize: 12, color: subtitleColor),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Switch(
+                    value: isDarkMode,
+                    onChanged: (val) {
+                      ref.read(themeModeProvider.notifier).state =
+                          val ? ThemeMode.dark : ThemeMode.light;
+                    },
+                    activeColor: const Color(0xFF00695C),
+                  ),
+                ],
+              ),
+            ),
           ),
-          const SizedBox(width: 14),
-          Expanded(
+
+          const SizedBox(height: 20),
+
+          // About section
+          _sectionLabel('About', isDarkMode),
+          Container(
+            decoration: BoxDecoration(
+              color: cardColor,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(isDarkMode ? 0.3 : 0.06),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w500,
-                    color: isDark ? Colors.white : Colors.black87,
+                // App Version
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: isDarkMode
+                              ? const Color(0xFF00695C).withOpacity(0.2)
+                              : const Color(0xFF00695C).withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: const Icon(Icons.info_outline,
+                            color: Color(0xFF00695C), size: 18),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Text(
+                          'App Version',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                            color: textColor,
+                          ),
+                        ),
+                      ),
+                      Text(
+                        '1.0.0',
+                        style: TextStyle(color: subtitleColor, fontSize: 14),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 2),
-                Text(
-                  subtitle,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: isDark ? Colors.grey.shade400 : Colors.grey,
+
+                _divider(isDarkMode),
+
+                // Privacy Policy
+                InkWell(
+                  onTap: () {},
+                  borderRadius: BorderRadius.circular(20),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 14),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: isDarkMode
+                                ? Colors.blue.withOpacity(0.2)
+                                : Colors.blue.shade50,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: const Icon(Icons.privacy_tip_outlined,
+                              color: Colors.blue, size: 18),
+                        ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Text(
+                            'Privacy Policy',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                              color: textColor,
+                            ),
+                          ),
+                        ),
+                        Icon(Icons.chevron_right,
+                            color: subtitleColor, size: 20),
+                      ],
+                    ),
+                  ),
+                ),
+
+                _divider(isDarkMode),
+
+                // Terms of Service
+                InkWell(
+                  onTap: () {},
+                  borderRadius: BorderRadius.circular(20),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 14),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: isDarkMode
+                                ? Colors.purple.withOpacity(0.2)
+                                : Colors.purple.shade50,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: const Icon(Icons.description_outlined,
+                              color: Colors.purple, size: 18),
+                        ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Text(
+                            'Terms of Service',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                              color: textColor,
+                            ),
+                          ),
+                        ),
+                        Icon(Icons.chevron_right,
+                            color: subtitleColor, size: 20),
+                      ],
+                    ),
                   ),
                 ),
               ],
             ),
           ),
-          Switch(
-            value: value,
-            onChanged: onChanged,
-            activeColor: const Color(0xFF00695C),
-          ),
+
+          const SizedBox(height: 30),
         ],
-      ),
-    );
-  }
-}
-
-class _InfoTile extends StatelessWidget {
-  final IconData icon;
-  final Color iconColor;
-  final Color iconBg;
-  final String title;
-  final Widget trailing;
-  final bool isDark;
-  final VoidCallback? onTap;
-
-  const _InfoTile({
-    required this.icon,
-    required this.iconColor,
-    required this.iconBg,
-    required this.title,
-    required this.trailing,
-    required this.isDark,
-    this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(20),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: isDark ? iconColor.withOpacity(0.15) : iconBg,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Icon(icon, color: iconColor, size: 18),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Text(
-                title,
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w500,
-                  color: isDark ? Colors.white : Colors.black87,
-                ),
-              ),
-            ),
-            trailing,
-          ],
-        ),
       ),
     );
   }

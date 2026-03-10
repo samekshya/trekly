@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../core/providers/theme_provider.dart';
+
 import '../screens/splash_screen.dart';
 import '../screens/onboarding_screen.dart';
 import '../screens/login_screen.dart';
@@ -12,14 +15,20 @@ import '../screens/my_bookings_screen.dart';
 import '../screens/settings_screen.dart';
 import '../screens/weather_screen.dart';
 import '../screens/change_password_screen.dart';
+import '../screens/trekking_essentials_screen.dart';
 
-class App extends StatelessWidget {
+class App extends ConsumerWidget {
   const App({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final themeMode = ref.watch(themeModeProvider);
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      theme: ThemeData.light(),
+      darkTheme: ThemeData.dark(),
+      themeMode: themeMode,
       initialRoute: '/splash',
       routes: {
         '/splash': (_) => const SplashScreen(),
@@ -34,8 +43,8 @@ class App extends StatelessWidget {
         '/settings': (_) => const SettingsScreen(),
         '/weather': (_) => const WeatherScreen(),
         '/change-password': (_) => const ChangePasswordScreen(),
+        '/essentials': (context) => const TrekkingEssentialsScreen(),
       },
-      // routes with arguments use onGenerateRoute
       onGenerateRoute: (settings) {
         if (settings.name == '/trek-detail') {
           return MaterialPageRoute(
