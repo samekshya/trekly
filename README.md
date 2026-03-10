@@ -24,7 +24,7 @@ Upload and manage profile photos
 
 Online and offline connectivity detection
 
-🖥️ App Screens
+ App Screens
 
 The application includes 15 main screens:
 
@@ -58,7 +58,7 @@ Settings Screen
 
 Weather Screen
 
-⚙️ Tech Stack
+Tech Stack
 Frontend
 
 Flutter (Dart)
@@ -96,7 +96,7 @@ API
 Custom REST API running on:
 
 http://10.0.2.2:5050/api
-🏗️ Project Architecture
+Project Architecture
 
 The application follows Clean Architecture principles to maintain separation of concerns and improve scalability.
 
@@ -117,7 +117,7 @@ lib/
 
 This layered structure ensures that the application remains modular, testable, and maintainable.
 
-🧠 Design Pattern
+Design Pattern
 
 The project uses the MVVM (Model–View–ViewModel) design pattern.
 
@@ -129,7 +129,7 @@ ViewModel – Handles business logic and state management
 
 This pattern helps separate UI from application logic.
 
-🔄 State Management
+State Management
 
 Trekly uses Riverpod for state management.
 
@@ -143,7 +143,7 @@ Easier testing
 
 Cleaner state handling
 
-📡 Sensors and APIs
+Sensors and APIs
 
 The application integrates several mobile features and APIs.
 
@@ -167,7 +167,7 @@ Weather API
 
 Displays weather conditions using a custom backend weather endpoint.
 
-🔐 Authentication
+Authentication
 
 The application supports secure user authentication with:
 
@@ -181,7 +181,7 @@ Change password
 
 Authentication tokens are stored locally using Hive.
 
-💾 Data Storage
+ Data Storage
 
 Two types of data storage are used:
 
@@ -209,7 +209,7 @@ Favorites
 
 Reviews
 
-🚀 Running the Project
+Running the Project
 1. Clone the Repository
 git clone https://github.com/samekshya/trekly.git
 2. Navigate to the Project
@@ -218,7 +218,7 @@ cd trekly
 flutter pub get
 4. Run the Application
 flutter run
-🔗 Backend API
+Backend API
 
 The Flutter app connects to a Node.js REST API.
 
@@ -228,7 +228,7 @@ http://10.0.2.2:5050/api
 
 Make sure the backend server is running before launching the app.
 
-🧪 Testing
+Testing
 
 The project includes:
 
