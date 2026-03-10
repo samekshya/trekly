@@ -1,6 +1,6 @@
 class ApiEndpoints {
   // base URL for Android emulator
-  static const String baseUrl = "http://10.0.2.2:5050/api";
+  static const String baseUrl = "http://192.168.1.73:5050/api";
 
   // Auth
   static const String login = "/auth/login";

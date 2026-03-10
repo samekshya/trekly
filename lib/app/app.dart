@@ -11,6 +11,7 @@ import '../screens/booking_screen.dart';
 import '../screens/my_bookings_screen.dart';
 import '../screens/settings_screen.dart';
 import '../screens/weather_screen.dart';
+import '../screens/change_password_screen.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -32,6 +33,7 @@ class App extends StatelessWidget {
         '/my-bookings': (_) => const MyBookingsScreen(),
         '/settings': (_) => const SettingsScreen(),
         '/weather': (_) => const WeatherScreen(),
+        '/change-password': (_) => const ChangePasswordScreen(),
       },
       // routes with arguments use onGenerateRoute
       onGenerateRoute: (settings) {
