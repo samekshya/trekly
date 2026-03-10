@@ -53,18 +53,18 @@ class _BottomNavigationScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Trekly'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () {
-              ref.read(authViewModelProvider.notifier).logout();
-              Navigator.pushReplacementNamed(context, '/login');
-            },
-          ),
-        ],
-      ),
+      // appBar: AppBar(
+      //   //title: const Text('Trekly'),
+      //   actions: [
+      //     IconButton(
+      //       icon: const Icon(Icons.logout),
+      //       onPressed: () {
+      //         ref.read(authViewModelProvider.notifier).logout();
+      //         Navigator.pushReplacementNamed(context, '/login');
+      //       },
+      //     ),
+      //   ],
+      // ),
       body: Column(
         children: [
           // offline banner

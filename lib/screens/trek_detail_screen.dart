@@ -1,12 +1,12 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sensors_plus/sensors_plus.dart';
 import '../features/treks/data/datasources/trek_remote_datasource.dart';
 import '../features/treks/data/models/trek_model.dart';
 import '../core/api/api_client.dart';
 import '../core/services/storage/token_storage.dart';
-import '../core/api/api_client.dart';
 import '../core/api/api_endpoints.dart';
-import '../core/services/storage/token_storage.dart';
 
 class TrekDetailScreen extends ConsumerStatefulWidget {
   const TrekDetailScreen({super.key});
@@ -19,6 +19,50 @@ class _TrekDetailScreenState extends ConsumerState<TrekDetailScreen> {
   TrekModel? _trek;
   bool _isLoading = true;
   String? _error;
+
+  // Gyroscope
+  double _gyroX = 0.0;
+  double _gyroY = 0.0;
+  StreamSubscription<GyroscopeEvent>? _gyroSub;
+
+  // Accelerometer (used as proximity - face down detection)
+  bool _isNear = false;
+  StreamSubscription<AccelerometerEvent>? _proxSub;
+
+  @override
+  void initState() {
+    super.initState();
+    _startGyroscope();
+    _startProximity();
+  }
+
+  void _startGyroscope() {
+    _gyroSub = gyroscopeEventStream().listen((event) {
+      if (mounted) {
+        setState(() {
+          _gyroX = event.x.clamp(-2.0, 2.0);
+          _gyroY = event.y.clamp(-2.0, 2.0);
+        });
+      }
+    });
+  }
+
+  void _startProximity() {
+    _proxSub = accelerometerEventStream().listen((event) {
+      if (mounted) {
+        setState(() {
+          _isNear = event.z < -7;
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _gyroSub?.cancel();
+    _proxSub?.cancel();
+    super.dispose();
+  }
 
   @override
   void didChangeDependencies() {
@@ -49,6 +93,19 @@ class _TrekDetailScreenState extends ConsumerState<TrekDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Accelerometer: dim screen when phone is face down
+    if (_isNear) {
+      return const Scaffold(
+        backgroundColor: Colors.black,
+        body: Center(
+          child: Text(
+            'Proximity Sensor Active',
+            style: TextStyle(color: Colors.white30, fontSize: 12),
+          ),
+        ),
+      );
+    }
+
     if (_isLoading) {
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
@@ -63,11 +120,12 @@ class _TrekDetailScreenState extends ConsumerState<TrekDetailScreen> {
     }
 
     final trek = _trek!;
+    final localImg = trek.localImage;
 
     return Scaffold(
       body: CustomScrollView(
         slivers: [
-          // hero image header
+          // hero image with gyroscope parallax
           SliverAppBar(
             expandedHeight: 250,
             pinned: true,
@@ -80,21 +138,27 @@ class _TrekDetailScreenState extends ConsumerState<TrekDetailScreen> {
                   shadows: [Shadow(color: Colors.black54, blurRadius: 4)],
                 ),
               ),
-              background: trek.image.isNotEmpty
-                  ? Image.network(
-                      trek.image,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Container(
-                        color: const Color(0xFF00695C),
-                        child: const Icon(Icons.terrain,
-                            size: 80, color: Colors.white),
-                      ),
-                    )
-                  : Container(
-                      color: const Color(0xFF00695C),
-                      child: const Icon(Icons.terrain,
-                          size: 80, color: Colors.white),
-                    ),
+              background: ClipRect(
+                child: Transform.translate(
+                  offset: Offset(_gyroY * 8, _gyroX * 8),
+                  child: localImg.isNotEmpty
+                      ? Image.asset(
+                          localImg,
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                          errorBuilder: (_, __, ___) => Container(
+                            color: const Color(0xFF00695C),
+                            child: const Icon(Icons.terrain,
+                                size: 80, color: Colors.white),
+                          ),
+                        )
+                      : Container(
+                          color: const Color(0xFF00695C),
+                          child: const Icon(Icons.terrain,
+                              size: 80, color: Colors.white),
+                        ),
+                ),
+              ),
             ),
           ),
 
@@ -104,6 +168,24 @@ class _TrekDetailScreenState extends ConsumerState<TrekDetailScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // sensor status badges
+                  Row(
+                    children: [
+                      _SensorBadge(
+                        icon: Icons.screen_rotation,
+                        label: 'Gyroscope Active',
+                        color: Colors.indigo,
+                      ),
+                      const SizedBox(width: 8),
+                      _SensorBadge(
+                        icon: Icons.sensor_window,
+                        label: 'Proximity Active',
+                        color: Colors.deepOrange,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+
                   // info chips
                   Row(
                     children: [
@@ -212,6 +294,45 @@ class _TrekDetailScreenState extends ConsumerState<TrekDetailScreen> {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _SensorBadge extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color color;
+
+  const _SensorBadge({
+    required this.icon,
+    required this.label,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withOpacity(0.4)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 12, color: color),
+          const SizedBox(width: 4),
+          Text(
+            label,
+            style: TextStyle(
+              color: color,
+              fontSize: 10,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -29,7 +29,7 @@ class TrekModel {
       duration: json['duration'] ?? 0,
       price: (json['price'] ?? 0).toDouble(),
       description: json['description'] ?? '',
-      image: json['image'] ?? '',
+      image: json['imageUrl'] ?? json['image'] ?? '',
     );
   }
 
@@ -45,5 +45,21 @@ class TrekModel {
       default:
         return difficulty;
     }
+  }
+
+  String get localImage {
+    final map = {
+      'Kapuche Glacier Lake': 'assets/images/kapuche.jpg',
+      'Sarangkot Sunrise Hike': 'assets/images/sarangkot.png',
+      'Shivapuri Day Hike': 'assets/images/shivapuri.png',
+      'Nagarkot Sunrise Hike': 'assets/images/nagarkot.png',
+      'Ghorepani Poon Hill': 'assets/images/ghorepani.png',
+      'Upper Mustang': 'assets/images/upper_mustang.png',
+      'Mardi Himal': 'assets/images/mardi_himal.png',
+      'Annapurna Base Camp': 'assets/images/annapurna_base.jpg',
+      'Langtang Valley Trek': 'assets/images/langtang.png',
+      'Annapurna Circuit Trek': 'assets/images/annapurna_circuit.png',
+    };
+    return map[name] ?? image;
   }
 }
