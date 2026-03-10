@@ -1,19 +1,120 @@
-# trekly
+Trekly - Trek Discovery & Booking Mobile App
 
-A new Flutter project.
+Trekly is a mobile application designed to help users discover and book trekking adventures in Nepal. The app allows users to explore trekking routes, view detailed trek information, check weather conditions, save favourite treks, and book trekking trips directly from their mobile device.
 
-## Getting Started
+This project was developed as part of the Mobile Application Development (ST6002CEM) module at Softwarica College / Coventry University.
 
-This project is a starting point for a Flutter application.
+Features
 
-A few resources to get you started if this is your first Flutter project:
+User authentication (Login / Register)
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Trek discovery and browsing
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-Updated Sprint 1 progress and UI changes.
-Sprint 1: Splash, onboarding, auth and home screens completed.
-Sprint 1: Splash, onboarding, auth and home screens completed.
+Detailed trek information
+
+Weather information integration
+
+Save favourite treks
+
+Trek booking functionality
+
+Responsive UI for phone and tablet
+
+Image upload functionality
+
+Internet connectivity detection
+
+Automated unit and widget testing
+
+Tech Stack
+Frontend
+
+Flutter
+
+Dart
+
+Material UI
+
+Backend
+
+Node.js
+
+Express.js
+
+TypeScript
+
+MongoDB
+
+Architecture
+
+Clean Architecture
+
+MVVM Design Pattern
+
+Project Structure
+lib/
+ ├── core/
+ │   ├── api
+ │   ├── config
+ │   ├── constants
+ │   └── services
+ │
+ ├── features/
+ │   ├── auth
+ │   ├── treks
+ │   └── upload
+ │
+ ├── screens/
+ │   ├── login
+ │   ├── register
+ │   ├── dashboard
+ │   ├── explore
+ │   ├── profile
+ │   └── booking
+ │
+ └── main.dart
+Screens Demonstrated
+
+Splash Screen
+
+Onboarding Screen
+
+Login Screen
+
+Register Screen
+
+Dashboard
+
+Explore Treks
+
+Trek Detail Page
+
+Weather Screen
+
+Booking Screen
+
+Profile / Settings
+
+Testing
+
+The project includes automated tests:
+
+Unit Tests
+
+Use case testing
+
+ViewModel testing
+
+Service testing
+
+Widget Tests
+
+Screen UI testing
+
+Interaction testing
+
+Testing tools used:
+
+Flutter Test
+
+Mockito
