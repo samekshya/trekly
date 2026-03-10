@@ -7,6 +7,10 @@ import '../screens/forgot_password_screen.dart';
 import '../screens/trek_detail_screen.dart';
 import '../screens/bottom_screen/bottomnavigation_screen.dart';
 import 'package:trekly/features/upload/presentation/upload_image_screen.dart';
+import '../screens/booking_screen.dart';
+import '../screens/my_bookings_screen.dart';
+import '../screens/settings_screen.dart';
+import '../screens/weather_screen.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -24,12 +28,22 @@ class App extends StatelessWidget {
         '/home': (_) => const BottomNavigationScreen(),
         '/upload': (_) => const UploadImageScreen(),
         '/forgot-password': (_) => const ForgotPasswordScreen(),
+        '/booking': (_) => const BookingScreen(),
+        '/my-bookings': (_) => const MyBookingsScreen(),
+        '/settings': (_) => const SettingsScreen(),
+        '/weather': (_) => const WeatherScreen(),
       },
       // routes with arguments use onGenerateRoute
       onGenerateRoute: (settings) {
         if (settings.name == '/trek-detail') {
           return MaterialPageRoute(
             builder: (_) => const TrekDetailScreen(),
+            settings: settings,
+          );
+        }
+        if (settings.name == '/book') {
+          return MaterialPageRoute(
+            builder: (_) => const BookingScreen(),
             settings: settings,
           );
         }

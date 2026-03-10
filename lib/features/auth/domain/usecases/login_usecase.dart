@@ -21,6 +21,7 @@ class LoginUseCase {
 
 // token nikalna
     final token = data['token'] as String;
+    await tokenStorage.saveToken(token);
 
 // user data nikalna ra save garxa
     final userJson = data['user'] as Map<String, dynamic>;

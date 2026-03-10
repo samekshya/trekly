@@ -4,6 +4,9 @@ import '../features/treks/data/datasources/trek_remote_datasource.dart';
 import '../features/treks/data/models/trek_model.dart';
 import '../core/api/api_client.dart';
 import '../core/services/storage/token_storage.dart';
+import '../core/api/api_client.dart';
+import '../core/api/api_endpoints.dart';
+import '../core/services/storage/token_storage.dart';
 
 class TrekDetailScreen extends ConsumerStatefulWidget {
   const TrekDetailScreen({super.key});
@@ -134,7 +137,7 @@ class _TrekDetailScreenState extends ConsumerState<TrekDetailScreen> {
                       const SizedBox(width: 8),
                       _InfoChip(
                         icon: Icons.attach_money,
-                        label: '\$${trek.price.toStringAsFixed(0)}',
+                        label: 'Rs. ${trek.price.toStringAsFixed(0)}',
                         color: Colors.teal,
                       ),
                     ],
@@ -158,6 +161,18 @@ class _TrekDetailScreenState extends ConsumerState<TrekDetailScreen> {
                       color: Colors.black87,
                     ),
                   ),
+                  const SizedBox(height: 16),
+
+                  // weather section
+                  const Text(
+                    'Weather at Location',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  _WeatherWidget(location: trek.location.split(',')[0].trim()),
                   const SizedBox(height: 100),
                 ],
               ),
@@ -189,7 +204,7 @@ class _TrekDetailScreenState extends ConsumerState<TrekDetailScreen> {
             ),
           ),
           child: Text(
-            'Book Now - \$${trek.price.toStringAsFixed(0)}',
+            'Book Now - Rs. ${trek.price.toStringAsFixed(0)}',
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
@@ -234,6 +249,106 @@ class _InfoChip extends StatelessWidget {
               fontSize: 12,
               fontWeight: FontWeight.w600,
             ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _WeatherWidget extends StatefulWidget {
+  final String location;
+  const _WeatherWidget({required this.location});
+
+  @override
+  State<_WeatherWidget> createState() => _WeatherWidgetState();
+}
+
+class _WeatherWidgetState extends State<_WeatherWidget> {
+  Map<String, dynamic>? _weather;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchWeather();
+  }
+
+  Future<void> _fetchWeather() async {
+    try {
+      final token = await TokenStorage().getToken();
+      final dio = token != null
+          ? ApiClient.createAuthDio(token)
+          : ApiClient.createDio();
+      final res = await dio.get(ApiEndpoints.weather(widget.location));
+      if (mounted) {
+        setState(() {
+          _weather = res.data['data'] ?? res.data;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (_weather == null) {
+      return const Text('Weather unavailable',
+          style: TextStyle(color: Colors.grey));
+    }
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFF00695C), Color(0xFF004D40)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Column(
+            children: [
+              const Icon(Icons.wb_sunny, color: Colors.white, size: 36),
+              const SizedBox(height: 4),
+              Text(
+                '${_weather!['temperature'] ?? '--'}°C',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                _weather!['condition'] ?? '',
+                style: const TextStyle(color: Colors.white70),
+              ),
+            ],
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(children: [
+                const Icon(Icons.water_drop, color: Colors.white70, size: 16),
+                const SizedBox(width: 4),
+                Text('${_weather!['humidity'] ?? '--'}% humidity',
+                    style: const TextStyle(color: Colors.white)),
+              ]),
+              const SizedBox(height: 8),
+              Row(children: [
+                const Icon(Icons.air, color: Colors.white70, size: 16),
+                const SizedBox(width: 4),
+                Text('${_weather!['windSpeed'] ?? '--'} km/h wind',
+                    style: const TextStyle(color: Colors.white)),
+              ]),
+            ],
           ),
         ],
       ),
