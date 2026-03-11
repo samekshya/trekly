@@ -2,7 +2,6 @@ Trekly - Trek Discovery & Booking Mobile App
 
 Trekly is a mobile application designed to help users discover and book trekking adventures in Nepal. The app allows users to explore trekking routes, view detailed trek information, check weather conditions, save favourite treks, and book trekking trips directly from their mobile device.
 
-This project was developed as part of the Mobile Application Development (ST6002CEM) module at Softwarica College / Coventry University.
 
 Features
 
